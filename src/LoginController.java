@@ -36,29 +36,62 @@ public class LoginController {
         try {
             Connection conn = DatabaseConnection.connect();
 
-            String sql = "SELECT * FROM users WHERE (username = ? OR email = ? OR tc = ?) AND password = ?";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, usernameInput);
-            statement.setString(2, usernameInput);
-            statement.setString(3, usernameInput);
-            statement.setString(4, passwordInput);
+            // 🔴 ÖNCE PERSONEL KONTROLÜ
+            String staffSQL = "SELECT * FROM staff WHERE (username=? OR email=?) AND password=?";
+            PreparedStatement staffStmt = conn.prepareStatement(staffSQL);
 
-            ResultSet result = statement.executeQuery();
+            staffStmt.setString(1, usernameInput);
+            staffStmt.setString(2, usernameInput);
+            staffStmt.setString(3, passwordInput);
+
+            ResultSet staffResult = staffStmt.executeQuery();
+
+            if (staffResult.next()) {
+
+                int staffId = staffResult.getInt("staff_id");
+                String fullName = staffResult.getString("full_name");
+                String role = staffResult.getString("role");
+
+                // ✅ PERSONEL OTURUM AÇ
+                StaffSession.setStaff(staffId, fullName, role);
+
+                statusLabel.setText("Personel girişi başarılı!");
+                statusLabel.setStyle("-fx-text-fill: green;");
+
+                // ✅ PERSONEL DASHBOARD
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("StaffDashboard.fxml"));
+                Parent root = loader.load();
+
+                Stage stage = (Stage) statusLabel.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+
+                return; // BURASI ÇOK ÖNEMLİ
+            }
+
+            // 🔵 PERSONEL YOKSA → ÜYE KONTROLÜ
+            String userSQL = "SELECT * FROM users WHERE (username=? OR email=? OR tc=?) AND password=?";
+            PreparedStatement userStmt = conn.prepareStatement(userSQL);
+
+            userStmt.setString(1, usernameInput);
+            userStmt.setString(2, usernameInput);
+            userStmt.setString(3, usernameInput);
+            userStmt.setString(4, passwordInput);
+
+            ResultSet result = userStmt.executeQuery();
 
             if (result.next()) {
-
-                statusLabel.setText("Giriş başarılı!");
-                statusLabel.setStyle("-fx-text-fill: green;");
 
                 int userId = result.getInt("id");
                 String username = result.getString("username");
                 String email = result.getString("email");
                 String tc = result.getString("tc");
 
-                // 🔥 USER SESSION KAYIT
                 UserSession.setUser(userId, username, email, tc);
 
-                // 🔥 Dashboard Aç
+                statusLabel.setText("Üye girişi başarılı!");
+                statusLabel.setStyle("-fx-text-fill: green;");
+
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("DashboardView.fxml"));
                 Parent root = loader.load();
 
@@ -70,7 +103,7 @@ public class LoginController {
                 stage.show();
 
             } else {
-                statusLabel.setText("Bilgiler yanlış!");
+                statusLabel.setText("Giriş bilgileri yanlış!");
                 statusLabel.setStyle("-fx-text-fill: red;");
             }
 
@@ -78,7 +111,7 @@ public class LoginController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            statusLabel.setText("Bağlantı hatası!");
+            statusLabel.setText("Sunucu hatası!");
         }
     }
 }

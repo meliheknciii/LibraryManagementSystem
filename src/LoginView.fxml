@@ -10,6 +10,8 @@
 <VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="LoginController"
+      prefWidth="800"
+      prefHeight="600"
       stylesheets="@styless.css">
 
     <Label text="Kütüphane Giriş Sistemi" style="-fx-font-size: 20px;"/>
