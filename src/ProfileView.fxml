@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ProfileController">
+
+    <Label layoutX="20" layoutY="20" fx:id="labelName"/>
+    <Label layoutX="20" layoutY="50" fx:id="labelEmail"/>
+    <Label layoutX="20" layoutY="80" fx:id="labelTc"/>
+</AnchorPane>
