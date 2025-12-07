@@ -10,12 +10,17 @@
             fx:controller="controller.MemberBorrowListController"
             prefWidth="600" prefHeight="400">
 
-    <TableView fx:id="borrowTable" layoutX="20" layoutY="20" prefWidth="560" prefHeight="360">
+    <TableView fx:id="borrowTable" layoutX="20" layoutY="20"
+               prefWidth="560" prefHeight="320">
         <columns>
             <TableColumn fx:id="titleCol" text="Kitap"/>
             <TableColumn fx:id="dateCol" text="Tarih"/>
             <TableColumn fx:id="statusCol" text="Durum"/>
         </columns>
     </TableView>
+
+    <!-- ALTTA ORTADA -->
+    <Button text="İade Et" onAction="#returnBook"
+            layoutX="260" layoutY="350" prefWidth="80"/>
 
 </AnchorPane>
