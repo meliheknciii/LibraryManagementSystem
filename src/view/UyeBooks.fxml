@@ -21,7 +21,6 @@
             </columns>
         </TableView>
     </center>
-
     <bottom>
         <HBox spacing="10" alignment="CENTER">
             <Button text="Ödünç Al" onAction="#borrowBook"/>

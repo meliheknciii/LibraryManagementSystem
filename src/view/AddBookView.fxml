@@ -17,6 +17,7 @@
     <TextField fx:id="titleField" promptText="Kitap Adı"/>
     <TextField fx:id="authorField" promptText="Yazar"/>
     <TextField fx:id="categoryField" promptText="Kategori"/>
+    <TextField fx:id="quantityField" promptText="Stok Miktari"/>
 
     <Button text="Kaydet" onAction="#handleSave"/>
     <Label fx:id="messageLabel"/>
