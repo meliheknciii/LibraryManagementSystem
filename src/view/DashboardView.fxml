@@ -3,25 +3,74 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.DashboardController"
-            prefWidth="1000"
-            prefHeight="650">
+            prefWidth="1100" prefHeight="700">
 
-    <Label fx:id="labelWelcome" layoutX="20" layoutY="20" prefWidth="300" prefHeight="40" style="-fx-font-size: 22px"/>
+    <!-- ▓▓▓ SOL MENÜ ▓▓▓ -->
+    <left>
+        <VBox spacing="15" style="-fx-background-color: #F4F4F4;" prefWidth="220">
+            <padding>
+                <Insets top="25" left="20" right="20" bottom="20"/>
+            </padding>
 
-    <Button text="Profil" layoutX="20" layoutY="60" onAction="#openProfileView"/>
-    <Button text="Kitap Ara" layoutX="20" layoutY="90" onAction="#openBookSearch"/>
-    <Button text="Kitap Ödünç Al" layoutX="20" layoutY="120" onAction="#openBorrowScreen"/>
-    <Button text="Ödünç islemlerim" layoutX="20" layoutY="150" onAction="#openMemberBorrowList"/>
+            <Label text="ÜYE PANELİ"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
+            <Separator/>
 
+            <Button text="Profil"
+                    prefWidth="180"
+                    style="-fx-font-size: 14px;"
+                    onAction="#openProfileView"/>
 
-    <AnchorPane fx:id="contentArea"
-                layoutX="150"
-                layoutY="20"
-                prefWidth="500"
-                prefHeight="400"/>
-</AnchorPane>
+            <Button text="Kitap Ara"
+                    prefWidth="180"
+                    style="-fx-font-size: 14px;"
+                    onAction="#openBookSearch"/>
+
+            <Button text="Kitap Ödünç Al"
+                    prefWidth="180"
+                    style="-fx-font-size: 14px;"
+                    onAction="#openBorrowScreen"/>
+
+            <Button text="Ödünç İşlemlerim"
+                    prefWidth="180"
+                    style="-fx-font-size: 14px;"
+                    onAction="#openMemberBorrowList"/>
+
+            <VBox VBox.vgrow="ALWAYS"/>
+
+        </VBox>
+    </left>
+
+    <!-- ▓▓▓ ÜST BAR ▓▓▓ -->
+    <top>
+        <HBox style="-fx-background-color: #ECECEC;"
+              spacing="10"
+              prefHeight="60"
+              alignment="CENTER_LEFT">
+            <padding>
+                <Insets left="20"/>
+            </padding>
+
+            <Label fx:id="labelWelcome"
+                   text="Hoş geldiniz"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <!-- ▓▓▓ ANA İÇERİK ALANI ▓▓▓ -->
+    <center>
+        <AnchorPane fx:id="contentArea"
+                    style="-fx-background-color: white;"
+                    prefWidth="800" prefHeight="600">
+        </AnchorPane>
+    </center>
+
+</BorderPane>
+
 
 
