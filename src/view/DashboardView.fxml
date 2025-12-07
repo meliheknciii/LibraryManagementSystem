@@ -41,6 +41,11 @@
                     style="-fx-font-size: 14px;"
                     onAction="#openMemberBorrowList"/>
 
+            <Button text="Çıkış Yap"
+                    prefWidth="180"
+                    style="-fx-font-size: 14px;"
+                    onAction="#logout"/>
+
             <VBox VBox.vgrow="ALWAYS"/>
 
         </VBox>

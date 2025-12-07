@@ -7,11 +7,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import model.MemberSession;
 
 public class DashboardController {
 
     @FXML private Label labelWelcome;
     @FXML private AnchorPane contentArea;
+
 
     private int userId;
     private String username;
@@ -94,5 +96,24 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void logout() {
+        try {
+            MemberSession.clear(); // Oturumu sıfırla
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
+            Parent root = loader.load();
+
+            // Stage'i labelWelcome üzerinden alıyoruz → null olamaz!
+            Stage stage = (Stage) labelWelcome.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
