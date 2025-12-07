@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.MemberBorrowListController"
+            prefWidth="600" prefHeight="400">
+
+    <TableView fx:id="borrowTable" layoutX="20" layoutY="20" prefWidth="560" prefHeight="360">
+        <columns>
+            <TableColumn fx:id="titleCol" text="Kitap"/>
+            <TableColumn fx:id="dateCol" text="Tarih"/>
+            <TableColumn fx:id="statusCol" text="Durum"/>
+        </columns>
+    </TableView>
+
+</AnchorPane>

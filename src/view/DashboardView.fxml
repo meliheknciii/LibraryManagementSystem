@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.DashboardController"
+            prefWidth="1000"
+            prefHeight="650">
+
+    <Label fx:id="labelWelcome" layoutX="20" layoutY="20" prefWidth="300" prefHeight="40" style="-fx-font-size: 22px"/>
+
+    <Button text="Profil" layoutX="20" layoutY="60" onAction="#openProfileView"/>
+    <Button text="Kitap Ara" layoutX="20" layoutY="90" onAction="#openBookSearch"/>
+    <Button text="Kitap Ödünç Al" layoutX="20" layoutY="120" onAction="#openBorrowScreen"/>
+    <Button text="Ödünç islemlerim" layoutX="20" layoutY="150" onAction="#openMemberBorrowList"/>
+
+
+
+    <AnchorPane fx:id="contentArea"
+                layoutX="150"
+                layoutY="20"
+                prefWidth="500"
+                prefHeight="400"/>
+</AnchorPane>
+
+

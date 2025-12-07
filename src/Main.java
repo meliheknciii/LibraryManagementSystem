@@ -8,9 +8,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        // 🔥 İLK AÇILACAK EKRAN: SEÇİM EKRANI
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SelectLoginView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/SelectLoginView.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 650);
 
         stage.setTitle("Kütüphane Yönetim Sistemi");
         stage.setScene(scene);
