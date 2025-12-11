@@ -59,4 +59,35 @@ public class StaffDashboardController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void handleMemberRegister() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MemberRegisterView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Üye Kaydı");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void handleMemberList() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MemberListView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Üye Listesi");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

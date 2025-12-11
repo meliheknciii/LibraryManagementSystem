@@ -17,6 +17,8 @@
             <Label text="PERSONEL PANELİ" style="-fx-font-size: 20px; -fx-padding:20;" />
 
             <Button text="Kitap Ekle" onAction="#openAddBook" prefWidth="150"/>
+            <Button text="Üye Listesi" onAction="#handleMemberList" prefWidth="150"/>
+            <Button text="Üye Kaydı" onAction="#handleMemberRegister" prefWidth="150"/>
             <Button text="Kitap Yönetimi" onAction="#openBookManage" prefWidth="150"/>
             <Button text="Ödünç İşlemleri" onAction="#openBorrowList" prefWidth="150"/>
             <Button text="Çıkış Yap" onAction="#handleLogout" prefWidth="150"/>
