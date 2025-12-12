@@ -13,7 +13,8 @@
       spacing="10" alignment="CENTER">
 
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets
+                top="20" right="20" bottom="20" left="20"/>
     </padding>
 
     <TableView fx:id="tableMembers" prefWidth="600" prefHeight="400">
@@ -24,6 +25,7 @@
             <TableColumn fx:id="colTc" text="TC" prefWidth="150"/>
         </columns>
     </TableView>
+    <Button text="Ödünç Ver" onAction="#handleBorrow"/>
 
 </VBox>
 

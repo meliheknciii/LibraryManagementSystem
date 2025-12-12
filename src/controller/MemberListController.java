@@ -3,9 +3,14 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.DatabaseConnection;
 
 import java.sql.Connection;
@@ -53,5 +58,45 @@ public class MemberListController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    private void handleBorrow() {
+        Member selectedMember = tableMembers.getSelectionModel().getSelectedItem();
+
+        if (selectedMember == null) {
+            showAlert("Lütfen bir üye seçin!");
+            return;
+        }
+
+        openBorrowView(selectedMember);
+    }
+    private void openBorrowView(Member member) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/BorrowView.fxml")
+            );
+            Parent root = loader.load();
+
+            BorrowController controller = loader.getController();
+            controller.setUserData(
+                    member.getId(),
+                    member.getUsername()
+            );
+
+            Stage stage = new Stage();
+            stage.setTitle("Ödünç Ver - " + member.getUsername());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Uyarı");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
