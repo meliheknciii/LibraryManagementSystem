@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Book;
 import model.DatabaseConnection;
@@ -61,34 +62,38 @@ public class MemberBorrowController {
 
     @FXML
     private void borrowBook() {
+
         Book selected = bookTable.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
-            showAlert("Uyarı","Kitap seçmeden ödünç alamazsın.");
+            showAlert("Uyarı", "Kitap seçmeden ödünç alamazsın.");
             return;
         }
 
-        Connection conn = DatabaseConnection.getInstance().getConnection();
-        PreparedStatement ps = null;
-
         try {
-            String sql = "INSERT INTO borrow (member_id, book_id, borrow_date, status) VALUES (?, ?, CURDATE(), 'BORROWED')";
-            ps = conn.prepareStatement(sql);
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/BorrowConfirmView.fxml")
+            );
 
-            ps.setInt(1, MemberSession.getMemberId());
-            ps.setInt(2, selected.getId());
+            Parent root = loader.load();
 
-            ps.executeUpdate();
+            // Yeni ekranın controller’ı
+            BorrowConfirmController controller = loader.getController();
+            controller.setBook(selected.getId(), selected.getTitle());
 
-            showAlert("Başarılı", "Kitap ödünç alındı!");
+            Stage stage = new Stage();
+            stage.setTitle("İade Tarihi Seç");
+            stage.initModality(Modality.APPLICATION_MODAL); // 🔒 ana ekran kilitlenir
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.showAndWait(); // 👈 pencere kapanmadan geri dönmez
+
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Hata", "Ödünç alma başarısız.");
-        } finally {
-            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
-            // ❌ connection.close() ASLA EKLENMEYECEK
+            showAlert("Hata", "İade tarihi ekranı açılamadı.");
         }
     }
+
 
     private void showAlert(String title,String msg){
         Alert a = new Alert(Alert.AlertType.INFORMATION);
@@ -108,4 +113,5 @@ public class MemberBorrowController {
             e.printStackTrace();
         }
     }
+
 }

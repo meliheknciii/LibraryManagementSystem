@@ -14,7 +14,8 @@
                prefWidth="560" prefHeight="320">
         <columns>
             <TableColumn fx:id="titleCol" text="Kitap"/>
-            <TableColumn fx:id="dateCol" text="Tarih"/>
+            <TableColumn fx:id="borrowDateCol" text="Alış Tarihi"/>
+            <TableColumn fx:id="dueDateCol" text="İade Tarihi"/>
             <TableColumn fx:id="statusCol" text="Durum"/>
         </columns>
     </TableView>
