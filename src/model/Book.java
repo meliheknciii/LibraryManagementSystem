@@ -1,5 +1,8 @@
 package model;
 
+import state.AvaibleState;
+import state.BookState;
+
 public class Book {
 
     private int id;
@@ -8,6 +11,7 @@ public class Book {
     private String category;
     private String status;
     private int quantity;
+    private BookState state;
 
     public Book(int id,
                 String title,
@@ -22,6 +26,25 @@ public class Book {
         this.category = category;
         this.status = status;
         this.quantity = quantity;
+    }
+    public Book() {
+        this.state = new AvaibleState(); // varsayılan durum
+    }
+
+    public void setState(BookState state) {
+        this.state = state;
+    }
+
+    public void borrow() {
+        state.borrow(this);
+    }
+
+    public void returnBook() {
+        state.returnBook(this);
+    }
+
+    public void reserve() {
+        state.reserve(this);
     }
 
     public int getId() {

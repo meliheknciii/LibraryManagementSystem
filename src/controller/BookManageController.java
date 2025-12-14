@@ -8,10 +8,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Book;
 import model.DatabaseConnection;
 import observer.InventorySubject;
+import service.StaffBookService;
 
 import java.sql.*;
 
 public class BookManageController {
+
+    private StaffBookService staffBookService = new StaffBookService();
 
     @FXML private TableView<Book> bookTable;
     @FXML private TableColumn<Book, Integer> idCol;
@@ -165,4 +168,20 @@ public class BookManageController {
         alert.setContentText(msg);
         alert.show();
     }
+    @FXML
+    private void handleBorrow() {
+
+        Book selectedBook = bookTable
+                .getSelectionModel()
+                .getSelectedItem();
+
+        if (selectedBook == null) {
+            System.out.println("❌ Kitap seçilmedi");
+            return;
+        }
+
+        staffBookService.borrowBook(selectedBook);
+    }
+    
+
 }

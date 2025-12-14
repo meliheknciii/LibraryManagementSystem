@@ -33,6 +33,7 @@ public class LoginController {
         String usernameInput = usernameField.getText();
         String passwordInput = passwordField.getText();
 
+
         if (usernameInput.isEmpty() || passwordInput.isEmpty()) {
             statusLabel.setText("Lütfen tüm alanları doldurun!");
             return;
