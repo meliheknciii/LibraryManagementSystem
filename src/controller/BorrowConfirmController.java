@@ -5,6 +5,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import model.MemberSession;
+import model.StaffSession;
 import service.BorrowService;
 
 import java.time.LocalDate;
@@ -15,12 +16,14 @@ public class BorrowConfirmController {
     @FXML private DatePicker dueDatePicker;
 
     private int bookId;
+    private String bookTitle;
 
-    private BorrowService borrowService = new BorrowService();
+    private final BorrowService borrowService = new BorrowService();
 
-    // Ana ekrandan veri almak için
+    // 🔹 Önceki ekrandan kitap bilgisi gelir
     public void setBook(int bookId, String title) {
         this.bookId = bookId;
+        this.bookTitle = title;
         bookTitleLabel.setText(title);
     }
 
@@ -34,11 +37,15 @@ public class BorrowConfirmController {
             return;
         }
 
+        int userId = MemberSession.getMemberId();   // ✅ SESSION
+        int staffId = StaffSession.getStaffId();    // ✅ SESSION
+
         borrowService.borrowBook(
-                MemberSession.getMemberId(),
+                userId,
                 bookId,
-                1, // staffId (şimdilik)
-                dueDate
+                staffId,
+                dueDate,
+                bookTitle
         );
 
         closeWindow();

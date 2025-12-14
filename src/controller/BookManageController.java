@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Book;
 import model.DatabaseConnection;
+import observer.InventorySubject;
 
 import java.sql.*;
 
@@ -107,6 +108,7 @@ public class BookManageController {
                         ps.setInt(4, selected.getId());
 
                         ps.executeUpdate();
+                        InventorySubject.getInstance().bookUpdated(newTitle);
 
                         showAlert("Başarılı", "Kitap bilgileri güncellendi ✅");
                         loadBooks();
@@ -137,13 +139,21 @@ public class BookManageController {
         confirm.showAndWait();
 
         if (confirm.getResult() == ButtonType.YES) {
-            try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-                PreparedStatement ps = conn.prepareStatement("DELETE FROM books WHERE id=?");
+            Connection conn = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement ps = null;
+
+            try {
+                ps = conn.prepareStatement("DELETE FROM books WHERE id=?");
                 ps.setInt(1, selected.getId());
                 ps.executeUpdate();
+
+                InventorySubject.getInstance().bookDeleted(selected.getTitle());
+
                 loadBooks();
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                try { if (ps != null) ps.close(); } catch (Exception ignored) {}
             }
         }
     }

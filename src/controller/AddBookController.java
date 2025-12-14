@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import model.DatabaseConnection;
+import observer.InventorySubject;
+
 
 public class AddBookController {
 
@@ -54,8 +56,11 @@ public class AddBookController {
 
             ps.executeUpdate();
 
-            messageLabel.setText("Kitap başarıyla eklendi! 📚");
+            // 🔔 BİLDİRİMİ TETİKLE (İŞTE ARADIĞIN YER BURASI)
+            InventorySubject.getInstance()
+                    .notifyObservers("📘 Yeni kitap eklendi: " + title);
 
+            messageLabel.setText("Kitap başarıyla eklendi! 📚");
             titleField.clear();
             authorField.clear();
             categoryField.clear();

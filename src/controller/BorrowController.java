@@ -37,7 +37,6 @@ public class BorrowController {
     // ===== FXML YÜKLENDİĞİNDE =====
     @FXML
     public void initialize() {
-        System.out.println("BORROW INIT STAFF ID: " + StaffSession.getStaffId());
         loadAvailableBooks();
     }
 
@@ -71,10 +70,11 @@ public class BorrowController {
 
         try {
             borrowService.borrowBook(
-                    userId,               // seçilen üye
-                    selectedBook.getId(), // seçilen kitap
-                    staffId,              // giriş yapan personel
-                    dueDate
+                    userId,
+                    selectedBook.getId(),
+                    staffId,
+                    dueDate,
+                    selectedBook.getTitle() // 🔥 EKLENDİ
             );
 
             messageLabel.setText("Ödünç verme başarılı ✅");

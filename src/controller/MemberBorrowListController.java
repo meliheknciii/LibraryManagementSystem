@@ -9,6 +9,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.MemberBorrowItem;
 import model.MemberSession;
+import observer.InventorySubject;
 
 public class MemberBorrowListController {
 
@@ -64,7 +65,7 @@ public class MemberBorrowListController {
 
         // İade işlemi için de DAO kullanıyoruz
         borrowDAO.returnBook(selected.getBorrowId());
-
+        InventorySubject.getInstance().bookReturned(selected.getTitle());
         System.out.println("Kitap iade edildi.");
 
         // Listeyi yenile ki tablo güncellensin

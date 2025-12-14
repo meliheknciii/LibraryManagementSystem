@@ -8,11 +8,20 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.event.ActionEvent;
+import observer.InventorySubject;
+import observer.NotificationObserver;
 import model.StaffSession;
 
 public class StaffDashboardController {
 
     @FXML private AnchorPane contentArea;
+
+    @FXML
+    public void initialize() {
+        // Bu kullanıcıya bildirim gönder
+        InventorySubject.getInstance()
+                .addObserver(new NotificationObserver("staff"));
+    }
 
     // ==========================================
     // ÇIKIŞ YAP
