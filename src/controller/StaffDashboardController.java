@@ -11,16 +11,22 @@ import javafx.event.ActionEvent;
 import model.StaffSession;
 
 public class StaffDashboardController {
+
     @FXML private AnchorPane contentArea;
 
+    // ==========================================
+    // ÇIKIŞ YAP
+    // ==========================================
     @FXML
     private void handleLogout(ActionEvent event) {
-
         StaffSession.clear();
-
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        stage.close(); // ya da login ekranına dön
+        stage.close(); // Login ekranına dönebilirsin veya kapatabilirsin
     }
+
+    // ==========================================
+    // KİTAP EKLEME PENCERESİ
+    // ==========================================
     @FXML
     private void openAddBook() {
         try {
@@ -36,6 +42,10 @@ public class StaffDashboardController {
             e.printStackTrace();
         }
     }
+
+    // ==========================================
+    // KİTAP YÖNETİMİ
+    // ==========================================
     @FXML
     private void openBookManage() {
         try {
@@ -47,8 +57,14 @@ public class StaffDashboardController {
             stage.setScene(new Scene(root));
             stage.show();
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    // ==========================================
+    // ÖDÜNÇ LİSTESİ (Panele Gömülü)
+    // ==========================================
     @FXML
     private void openBorrowList() {
         try {
@@ -59,6 +75,10 @@ public class StaffDashboardController {
             e.printStackTrace();
         }
     }
+
+    // ==========================================
+    // ÜYE KAYDI PENCERESİ
+    // ==========================================
     @FXML
     private void handleMemberRegister() {
         try {
@@ -74,6 +94,10 @@ public class StaffDashboardController {
             e.printStackTrace();
         }
     }
+
+    // ==========================================
+    // ÜYE LİSTESİ PENCERESİ
+    // ==========================================
     @FXML
     private void handleMemberList() {
         try {
@@ -90,4 +114,23 @@ public class StaffDashboardController {
         }
     }
 
+    // ==========================================
+    // 🔥 YENİ EKLENEN: PERSONEL EKLEME
+    // ==========================================
+    @FXML
+    private void handleAddStaff() {
+        try {
+            // Dosya isminin StaffAddView.fxml olduğundan emin ol
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StaffAddView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Personel Ekle");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

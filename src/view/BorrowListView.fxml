@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.MemberBorrowListController"
-            prefWidth="600" prefHeight="400">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.MemberBorrowListController"
+      spacing="10"
+      alignment="CENTER"
+      prefWidth="700"
+      prefHeight="500">
 
-    <TableView fx:id="borrowTable" layoutX="20" layoutY="20"
-               prefWidth="560" prefHeight="320">
+    <TableView fx:id="tableBorrowed" prefHeight="400">
+
         <columns>
-            <TableColumn fx:id="titleCol" text="Kitap"/>
-            <TableColumn fx:id="borrowDateCol" text="Alış Tarihi"/>
-            <TableColumn fx:id="dueDateCol" text="İade Tarihi"/>
-            <TableColumn fx:id="statusCol" text="Durum"/>
+            <TableColumn fx:id="colTitle" text="Kitap" prefWidth="200"/>
+            <TableColumn fx:id="colBorrowDate" text="Alış Tarihi" prefWidth="150"/>
+            <TableColumn fx:id="colReturnDate" text="İade Tarihi" prefWidth="150"/>
+            <TableColumn fx:id="colStatus" text="Durum" prefWidth="120"/>
         </columns>
+
     </TableView>
 
-    <!-- ALTTA ORTADA -->
-    <Button text="İade Et" onAction="#returnBook"
-            layoutX="260" layoutY="350" prefWidth="80"/>
+    <Button text="İade Et" onAction="#returnBook"/>
 
-</AnchorPane>
+</VBox>

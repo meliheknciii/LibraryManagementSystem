@@ -1,6 +1,6 @@
 package model;
 
-public class  Book {
+public class Book {
 
     private int id;
     private String title;
@@ -9,7 +9,13 @@ public class  Book {
     private String status;
     private int quantity;
 
-    public Book(int id, String title, String author, String category, String status, int quantity) {
+    public Book(int id,
+                String title,
+                String author,
+                String category,
+                String status,
+                int quantity) {
+
         this.id = id;
         this.title = title;
         this.author = author;
@@ -18,11 +24,33 @@ public class  Book {
         this.quantity = quantity;
     }
 
-    public int getId() { return id; }
-    public String getTitle() { return title; }
-    public String getAuthor() { return author; }
-    public String getCategory() { return category; }
+    public int getId() {
+        return id;
+    }
 
-    public String getStatus() { return status; }
-    public int getQuantity() { return quantity; }
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    // 🔥 ComboBox ve TableView için ZORUNLU
+    @Override
+    public String toString() {
+        return title + " - " + author;
+    }
 }

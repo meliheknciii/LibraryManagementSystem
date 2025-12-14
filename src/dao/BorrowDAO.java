@@ -12,45 +12,54 @@ import java.util.List;
 
 public class BorrowDAO {
 
-    // 🔹 ÖDÜNÇ EKLEME (SENİN KODUN – DEĞİŞMEDİ)
+    // 1️⃣ ÖDÜNÇ VER
     public void insertBorrow(int memberId, int bookId, int staffId, LocalDate dueDate) {
-
         String sql = """
-            INSERT INTO borrow (member_id, book_id, staff_id, borrow_date, due_date)
-            VALUES (?, ?, ?, CURDATE(), ?)
+            INSERT INTO borrow (member_id, book_id, staff_id, borrow_date, return_date, status)
+            VALUES (?, ?, ?, ?, ?, 'BORROWED')
         """;
-
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, memberId);
             ps.setInt(2, bookId);
             ps.setInt(3, staffId);
-            ps.setDate(4, java.sql.Date.valueOf(dueDate));
-
+            ps.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
+            ps.setDate(5, java.sql.Date.valueOf(dueDate));
             ps.executeUpdate();
-
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Ödünç kaydı eklenemedi (DB hatası)");
+            throw new RuntimeException("Ödünç verme başarısız!", e);
         }
     }
 
-    // 🔹 AKTİF ÖDÜNÇLERİ GETİR (İADE TARİHİ DAHİL)
-    public List<MemberBorrowItem> getActiveBorrowsByMember(int memberId) {
+    // 2️⃣ İADE ET
+    public void returnBook(int borrowId) {
+        String sql = "UPDATE borrow SET status = 'RETURNED' WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, borrowId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("İade işlemi başarısız!", e);
+        }
+    }
 
+    // 3️⃣ ÜYENİN TÜM GEÇMİŞİ (HEM AKTİF HEM İADE) - HATA BURADAYDI, DÜZELTİLDİ
+    public List<MemberBorrowItem> getBorrowsByMember(int memberId) {
         List<MemberBorrowItem> list = new ArrayList<>();
 
+        // DÜZELTME: 'b.return_date AS due_date' eklendi.
         String sql = """
-            SELECT br.id AS borrow_id,
-                   br.book_id,
-                   b.title,
-                   br.borrow_date,
-                   br.due_date,
-                   br.status
-            FROM borrow br
-            JOIN books b ON b.id = br.book_id
-            WHERE br.member_id = ? AND br.status = 'BORROWED'
+            SELECT 
+                b.id,
+                b.book_id,
+                bk.title,
+                b.borrow_date,
+                b.return_date AS due_date, 
+                b.status
+            FROM borrow b
+            JOIN books bk ON bk.id = b.book_id
+            WHERE b.member_id = ?
+            ORDER BY b.borrow_date DESC
         """;
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -61,42 +70,106 @@ public class BorrowDAO {
 
             while (rs.next()) {
                 list.add(new MemberBorrowItem(
-                        rs.getInt("borrow_id"),
+                        rs.getInt("id"),
                         rs.getInt("book_id"),
                         rs.getString("title"),
-                        rs.getDate("borrow_date").toLocalDate(),
-                        rs.getDate("due_date") != null
-                                ? rs.getDate("due_date").toLocalDate()
-                                : null,
-                        rs.getString("status")
+                        rs.getString("borrow_date"),
+                        rs.getString("due_date"), // Artık 'due_date' okunabilir
+                        null,
+                        rs.getString("status"),
+                        0,
+                        0.0
                 ));
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-    public void returnBook(int borrowId, int bookId) {
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-
-            String sql1 = "UPDATE borrow SET status='RETURNED', return_date=NOW() WHERE id=?";
-            try (PreparedStatement ps1 = conn.prepareStatement(sql1)) {
-                ps1.setInt(1, borrowId);
-                ps1.executeUpdate();
-            }
-
-            String sql2 = "UPDATE books SET quantity = quantity + 1 WHERE id=?";
-            try (PreparedStatement ps2 = conn.prepareStatement(sql2)) {
-                ps2.setInt(1, bookId);
-                ps2.executeUpdate();
-            }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return list;
     }
 
+    // 4️⃣ GECİKMELİ ÖDÜNÇLER
+    public List<MemberBorrowItem> getLateBorrows(int memberId) {
+        List<MemberBorrowItem> list = new ArrayList<>();
+        String sql = """
+            SELECT 
+                b.id,
+                b.book_id,
+                bk.title,
+                b.borrow_date,
+                b.return_date AS due_date,
+                DATEDIFF(CURDATE(), b.return_date) AS late_days
+            FROM borrow b
+            JOIN books bk ON bk.id = b.book_id
+            WHERE b.member_id = ?
+              AND b.status = 'BORROWED'
+              AND CURDATE() > b.return_date
+            ORDER BY b.borrow_date DESC
+        """;
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int lateDays = rs.getInt("late_days");
+                double lateFee = lateDays * 5.0;
+                list.add(new MemberBorrowItem(
+                        rs.getInt("id"),
+                        rs.getInt("book_id"),
+                        rs.getString("title"),
+                        rs.getString("borrow_date"),
+                        rs.getString("due_date"),
+                        null,
+                        "LATE",
+                        lateDays,
+                        lateFee
+                ));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    // 5️⃣ ÜYENİN AKTİF ÖDÜNÇLERİ (Controller için)
+    public List<MemberBorrowItem> getActiveBorrows(int memberId) {
+        List<MemberBorrowItem> list = new ArrayList<>();
+        String sql = """
+            SELECT 
+                b.id,
+                b.book_id,
+                bk.title,
+                b.borrow_date,
+                b.return_date AS due_date,
+                b.status,
+                IF(CURDATE() > b.return_date, DATEDIFF(CURDATE(), b.return_date), 0) AS late_days
+            FROM borrow b
+            JOIN books bk ON bk.id = b.book_id
+            WHERE b.member_id = ?
+              AND b.status = 'BORROWED'
+            ORDER BY b.borrow_date DESC
+        """;
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int lateDays = rs.getInt("late_days");
+                double lateFee = lateDays * 5.0;
+                list.add(new MemberBorrowItem(
+                        rs.getInt("id"),
+                        rs.getInt("book_id"),
+                        rs.getString("title"),
+                        rs.getString("borrow_date"),
+                        rs.getString("due_date"),
+                        null,
+                        rs.getString("status"),
+                        lateDays,
+                        lateFee
+                ));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Aktif ödünçler getirilemedi!", e);
+        }
+        return list;
+    }
 }

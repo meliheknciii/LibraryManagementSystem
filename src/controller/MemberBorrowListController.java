@@ -1,6 +1,8 @@
 package controller;
 
-import dao.BorrowDAO;
+import dao.BorrowDAO; // 1. DAO'yu import et
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -8,58 +10,64 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.MemberBorrowItem;
 import model.MemberSession;
 
-import java.time.LocalDate;
-
 public class MemberBorrowListController {
 
-    @FXML private TableView<MemberBorrowItem> borrowTable;
+    @FXML private TableView<MemberBorrowItem> tableBorrowed;
+    @FXML private TableColumn<MemberBorrowItem, String> colTitle;
+    @FXML private TableColumn<MemberBorrowItem, String> colBorrowDate;
+    @FXML private TableColumn<MemberBorrowItem, String> colReturnDate;
+    @FXML private TableColumn<MemberBorrowItem, String> colStatus;
 
-    @FXML private TableColumn<MemberBorrowItem, String> titleCol;
-    @FXML private TableColumn<MemberBorrowItem, LocalDate> borrowDateCol;
-    @FXML private TableColumn<MemberBorrowItem, LocalDate> dueDateCol;
-    @FXML private TableColumn<MemberBorrowItem, String> statusCol;
+    private final ObservableList<MemberBorrowItem> borrowList = FXCollections.observableArrayList();
 
+    // DAO nesnesini burada oluşturuyoruz
     private final BorrowDAO borrowDAO = new BorrowDAO();
 
     @FXML
-    public void initialize() {
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        borrowDateCol.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
-        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+    private void initialize() {
+        // Tablo Sütun Eşleştirmeleri
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+        // Modelde 'dueDate' (Teslim Tarihi) alanını kullanıyoruz
+        colReturnDate.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
+        tableBorrowed.setItems(borrowList);
+
+        // Verileri yükle
         loadBorrowedBooks();
     }
 
     private void loadBorrowedBooks() {
-        borrowTable.getItems().clear();
-        borrowTable.getItems().addAll(
-                borrowDAO.getActiveBorrowsByMember(
-                        MemberSession.getMemberId()
-                )
-        );
+        // Listeyi temizle
+        borrowList.clear();
+
+        // Oturum açmış üyenin ID'sini al
+        int memberId = MemberSession.getMemberId();
+
+        // ==========================================================
+        // 🔥 BAKIN KOD NE KADAR KISALDI 🔥
+        // SQL yazmak yerine sadece DAO'ya "Getir" diyoruz.
+        // Hata yönetimi ve SQL sorgusu artık BorrowDAO içinde.
+        // ==========================================================
+        borrowList.addAll(borrowDAO.getBorrowsByMember(memberId));
     }
 
     @FXML
     private void returnBook() {
-        MemberBorrowItem selected = borrowTable.getSelectionModel().getSelectedItem();
+        MemberBorrowItem selected = tableBorrowed.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
-            System.out.println("Bir kitap seçilmedi!");
+            System.out.println("Lütfen iade edilecek kitabı seçin!");
             return;
         }
 
-        try {
-            borrowDAO.returnBook(
-                    selected.getBorrowId(),
-                    selected.getBookId()
-            );
+        // İade işlemi için de DAO kullanıyoruz
+        borrowDAO.returnBook(selected.getBorrowId());
 
-            System.out.println("Kitap başarıyla iade edildi!");
-            loadBorrowedBooks();
+        System.out.println("Kitap iade edildi.");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Listeyi yenile ki tablo güncellensin
+        loadBorrowedBooks();
     }
 }

@@ -1,21 +1,16 @@
 package controller;
 
+import dao.UserDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import model.DatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import model.Member;
 
 public class MemberListController {
@@ -25,8 +20,10 @@ public class MemberListController {
     @FXML private TableColumn<Member, String> colUsername;
     @FXML private TableColumn<Member, String> colEmail;
     @FXML private TableColumn<Member, String> colTc;
+    @FXML private TextField txtSearch;
 
-    private ObservableList<Member> memberList = FXCollections.observableArrayList();
+    private final UserDAO userDAO = new UserDAO();
+    private final ObservableList<Member> memberList = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
@@ -35,56 +32,41 @@ public class MemberListController {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTc.setCellValueFactory(new PropertyValueFactory<>("tc"));
 
-        loadMembers();
+        loadAllMembers();
     }
 
-    private void loadMembers() {
-        try {
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM users");
+    private void loadAllMembers() {
+        memberList.setAll(userDAO.getAllMembers());
+        tableMembers.setItems(memberList);
+    }
 
-            while (rs.next()) {
-                memberList.add(new Member(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("tc")
-                ));
-            }
-
-            tableMembers.setItems(memberList);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+    @FXML
+    private void handleSearch() {
+        String keyword = txtSearch.getText().trim();
+        if (keyword.isEmpty()) {
+            loadAllMembers();
+        } else {
+            memberList.setAll(userDAO.searchMembers(keyword));
         }
     }
+
     @FXML
     private void handleBorrow() {
-        Member selectedMember = tableMembers.getSelectionModel().getSelectedItem();
-
-        if (selectedMember == null) {
+        Member selected = tableMembers.getSelectionModel().getSelectedItem();
+        if (selected == null) {
             showAlert("Lütfen bir üye seçin!");
             return;
         }
 
-        openBorrowView(selectedMember);
-    }
-    private void openBorrowView(Member member) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/BorrowView.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/BorrowView.fxml"));
             Parent root = loader.load();
 
             BorrowController controller = loader.getController();
-            controller.setUserData(
-                    member.getId(),
-                    member.getUsername()
-            );
+            controller.setUserData(selected.getId(), selected.getUsername());
 
             Stage stage = new Stage();
-            stage.setTitle("Ödünç Ver - " + member.getUsername());
+            stage.setTitle("Ödünç Ver - " + selected.getUsername());
             stage.setScene(new Scene(root));
             stage.show();
 
@@ -92,11 +74,42 @@ public class MemberListController {
             e.printStackTrace();
         }
     }
-    private void showAlert(String message) {
+
+    @FXML
+    private void handleTableClick(javafx.scene.input.MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            Member selected = tableMembers.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                openMemberDetail(selected);
+            }
+        }
+    }
+
+    private void openMemberDetail(Member member) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/MemberDetailView.fxml")
+            );
+            Parent root = loader.load();
+
+            MemberDetailController controller = loader.getController();
+            controller.setMember(member);
+
+            Stage stage = new Stage();
+            stage.setTitle("Üye Detayı - " + member.getUsername());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Uyarı");
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 }
