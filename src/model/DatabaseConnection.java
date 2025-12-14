@@ -22,10 +22,10 @@ public class DatabaseConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("MySQL Singleton bağlantısı başarılı!");
+            System.out.println("MySQL bağlantısı başarılı!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Singleton bağlantısı başarısız!");
+            System.out.println("MySQL bağlantısı başarısız!");
         }
     }
 
@@ -45,7 +45,6 @@ public class DatabaseConnection {
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
-                System.out.println("Bağlantı kapalıydı, yeniden bağlanıyor...");
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
             }
         } catch (Exception e) {

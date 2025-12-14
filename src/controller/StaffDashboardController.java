@@ -19,7 +19,7 @@ public class StaffDashboardController {
     // ==========================================
     @FXML
     private void handleLogout(ActionEvent event) {
-        StaffSession.clear();
+        /*StaffSession.clear();*/
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         stage.close(); // Login ekranına dönebilirsin veya kapatabilirsin
     }

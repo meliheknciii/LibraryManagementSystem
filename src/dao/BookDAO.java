@@ -83,4 +83,26 @@ public class BookDAO {
             e.printStackTrace();
         }
     }
+    public void addBook(Book book) {
+
+        String sql = """
+        INSERT INTO books (title, author, category, quantity,status,quantity) VALUES (?,?,?,?,?,?)
+    """;
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, book.getTitle());
+            ps.setString(2, book.getAuthor());
+            ps.setString(3, book.getCategory());
+            ps.setInt(4, book.getQuantity());
+            ps.setString(5, book.getStatus());
+            ps.setInt(6, book.getQuantity());
+
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

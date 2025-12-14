@@ -37,6 +37,7 @@ public class BorrowController {
     // ===== FXML YÜKLENDİĞİNDE =====
     @FXML
     public void initialize() {
+        System.out.println("BORROW INIT STAFF ID: " + StaffSession.getStaffId());
         loadAvailableBooks();
     }
 

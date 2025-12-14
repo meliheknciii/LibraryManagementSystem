@@ -30,7 +30,6 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-
         String usernameInput = usernameField.getText();
         String passwordInput = passwordField.getText();
 
@@ -60,6 +59,7 @@ public class LoginController {
 
                 // ✅ PERSONEL OTURUM AÇ
                 StaffSession.setStaff(staffId, fullName, role);
+
 
                 statusLabel.setText("Personel girişi başarılı!");
                 statusLabel.setStyle("-fx-text-fill: green;");
