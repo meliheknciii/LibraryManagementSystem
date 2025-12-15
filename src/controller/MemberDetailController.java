@@ -42,7 +42,7 @@ public class MemberDetailController {
     public void setMember(Member member) {
         this.memberId = member.getId();
 
-        lblName.setText("Üye: " + member.getUsername());
+        lblName.setText("Üye: " + member.getName());
         lblEmail.setText("Email: " + member.getEmail());
         lblTc.setText("TC: " + member.getTc());
 

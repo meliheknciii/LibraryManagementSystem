@@ -28,7 +28,7 @@ public class MemberListController {
     @FXML
     private void initialize() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        colUsername.setCellValueFactory(new PropertyValueFactory<>("name")); // ✅
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTc.setCellValueFactory(new PropertyValueFactory<>("tc"));
 
@@ -63,10 +63,10 @@ public class MemberListController {
             Parent root = loader.load();
 
             BorrowController controller = loader.getController();
-            controller.setUserData(selected.getId(), selected.getUsername());
+            controller.setUserData(selected.getId(), selected.getName()); // ✅
 
             Stage stage = new Stage();
-            stage.setTitle("Ödünç Ver - " + selected.getUsername());
+            stage.setTitle("Ödünç Ver - " + selected.getName());
             stage.setScene(new Scene(root));
             stage.show();
 
@@ -96,7 +96,7 @@ public class MemberListController {
             controller.setMember(member);
 
             Stage stage = new Stage();
-            stage.setTitle("Üye Detayı - " + member.getUsername());
+            stage.setTitle("Üye Detayı - " + member.getName()); // ✅
             stage.setScene(new Scene(root));
             stage.show();
 

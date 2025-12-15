@@ -1,5 +1,6 @@
 package controller;
 
+import factory.UserFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,10 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import model.DatabaseConnection;
-import model.MemberSession;
-import model.StaffSession;
-import model.UserSession;
+import model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,22 +28,24 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
+
         String usernameInput = usernameField.getText();
         String passwordInput = passwordField.getText();
 
-
         if (usernameInput.isEmpty() || passwordInput.isEmpty()) {
             statusLabel.setText("Lütfen tüm alanları doldurun!");
+            statusLabel.setStyle("-fx-text-fill: red;");
             return;
         }
 
         try {
             Connection conn = DatabaseConnection.getInstance().getConnection();
 
-            // 🔴 ÖNCE PERSONEL KONTROLÜ
+            /* =======================
+               1️⃣ PERSONEL KONTROLÜ
+               ======================= */
             String staffSQL = "SELECT * FROM staff WHERE (username=? OR email=?) AND password=?";
             PreparedStatement staffStmt = conn.prepareStatement(staffSQL);
-
             staffStmt.setString(1, usernameInput);
             staffStmt.setString(2, usernameInput);
             staffStmt.setString(3, passwordInput);
@@ -58,14 +58,27 @@ public class LoginController {
                 String fullName = staffResult.getString("full_name");
                 String role = staffResult.getString("role");
 
-                // ✅ PERSONEL OTURUM AÇ
-                StaffSession.setStaff(staffId, fullName, role);
+                // ✅ FACTORY → STAFF NESNESİ
+                AbstractUser user = UserFactory.createUser(
+                        "STAFF",
+                        staffId,
+                        fullName,
+                        null,
+                        null,
+                        role
+                );
 
+                // ✅ SESSION
+                StaffSession.setStaff(
+                        user.getId(),
+                        user.getName(),
+                        user.getRole()
+                );
 
                 statusLabel.setText("Personel girişi başarılı!");
                 statusLabel.setStyle("-fx-text-fill: green;");
 
-                // ✅ PERSONEL DASHBOARD
+                // ✅ STAFF DASHBOARD
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/StaffDashboard.fxml"));
                 Parent root = loader.load();
 
@@ -73,10 +86,12 @@ public class LoginController {
                 stage.setScene(new Scene(root));
                 stage.show();
 
-                return; // BURASI ÇOK ÖNEMLİ
+                return; // ❗ Personel girişinden sonra devam etme
             }
 
-            // 🔵 PERSONEL YOKSA → ÜYE KONTROLÜ
+            /* =======================
+               2️⃣ ÜYE KONTROLÜ
+               ======================= */
             String userSQL = "SELECT * FROM users WHERE (username=? OR email=? OR tc=?) AND password=?";
             PreparedStatement userStmt = conn.prepareStatement(userSQL);
 
@@ -94,17 +109,40 @@ public class LoginController {
                 String email = result.getString("email");
                 String tc = result.getString("tc");
 
-                UserSession.setUser(userId, username, email, tc);
+                // ✅ FACTORY → MEMBER NESNESİ
+                AbstractUser user = UserFactory.createUser(
+                        "MEMBER",
+                        userId,
+                        username,
+                        email,
+                        tc,
+                        null
+                );
+
+                // ✅ SESSION
+                UserSession.setUser(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        ((Member) user).getTc()
+                );
+
+                MemberSession.setMemberId(user.getId());
 
                 statusLabel.setText("Üye girişi başarılı!");
-                MemberSession.setMemberId(userId);
                 statusLabel.setStyle("-fx-text-fill: green;");
 
+                // ✅ MEMBER DASHBOARD
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/DashboardView.fxml"));
                 Parent root = loader.load();
 
                 DashboardController controller = loader.getController();
-                controller.setUserData(userId, username, email, tc);
+                controller.setUserData(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        ((Member) user).getTc()
+                );
 
                 Stage stage = (Stage) statusLabel.getScene().getWindow();
                 stage.setScene(new Scene(root));
@@ -115,13 +153,10 @@ public class LoginController {
                 statusLabel.setStyle("-fx-text-fill: red;");
             }
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
             statusLabel.setText("Sunucu hatası!");
+            statusLabel.setStyle("-fx-text-fill: red;");
         }
-
-
     }
 }

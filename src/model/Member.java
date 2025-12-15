@@ -1,33 +1,28 @@
 package model;
 
-public class Member {
+public class Member extends AbstractUser {
 
-    private int id;
-    private String username;
-    private String email;
     private String tc;
 
     public Member(int id, String username, String email, String tc) {
         this.id = id;
-        this.username = username;
+        this.name = username;
         this.email = email;
         this.tc = tc;
     }
 
-    // GETTER'lar
-    public int getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
     public String getTc() {
         return tc;
+    }
+
+    @Override
+    public String getRole() {
+        return "MEMBER";
+    }
+
+    @Override
+    public void showDashboard() {
+        System.out.println("Member dashboard açıldı");
+        // JavaFX ekran yönlendirmesi burada yapılır
     }
 }
